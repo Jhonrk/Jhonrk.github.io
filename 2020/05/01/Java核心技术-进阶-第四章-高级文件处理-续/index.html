@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-Hans" >
+
+
+<head>
+  <meta charset="utf-8" />
+   
+  <meta name="keywords" content="生活,代码,学习" />
+   
+  <meta name="description" content="可爱一如往常" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    Java核心技术[进阶] 第四章 高级文件处理(续) |  光
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content on">
+      <section class="outer">
+  <article id="post-Java核心技术-进阶-第四章-高级文件处理-续" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  Java核心技术[进阶] 第四章 高级文件处理(续)
+</h1>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/05/01/Java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF-%E8%BF%9B%E9%98%B6-%E7%AC%AC%E5%9B%9B%E7%AB%A0-%E9%AB%98%E7%BA%A7%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86-%E7%BB%AD/" class="article-date">
+  <time datetime="2020-05-01T00:34:29.000Z" itemprop="datePublished">2020-05-01</time>
+</a>
+      
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">2.5k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">12分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <h2 id="第四节-图形图像简介及解析"><a href="#第四节-图形图像简介及解析" class="headerlink" title="第四节 图形图像简介及解析"></a>第四节 图形图像简介及解析</h2><h3 id="大纲"><a href="#大纲" class="headerlink" title="大纲"></a>大纲</h3><ul>
+<li>图形图像基本概念</li>
+<li>Java图形图像关键类</li>
+<li>典型应用<ul>
+<li>图像文件基本读写</li>
+<li>验证码生成</li>
+<li>统计图生成</li>
+</ul>
+</li>
+</ul>
+<h3 id="图形图像基本概念"><a href="#图形图像基本概念" class="headerlink" title="图形图像基本概念"></a>图形图像基本概念</h3><ul>
+<li>图形：Graph<ul>
+<li>矢量图,根据几何特性来画的,比如点、直线、弧线等</li>
+</ul>
+</li>
+<li>图像：Image<ul>
+<li>由像素点组成</li>
+<li>格式：jpg,png,bmp,svg,wmf,gif,tiff等</li>
+<li>颜色：RGB</li>
+</ul>
+</li>
+</ul>
+<h3 id="Java图像图像关键类"><a href="#Java图像图像关键类" class="headerlink" title="Java图像图像关键类"></a>Java图像图像关键类</h3><ul>
+<li>图形：Graph<ul>
+<li>java.awt包</li>
+<li>Java2D库: Graphics2D, Line2D, Rectangle2D, Ellipse2D, Arc2D</li>
+<li>Color,Stroke</li>
+</ul>
+</li>
+<li>图像：Image<ul>
+<li>javax.imageio包</li>
+<li>ImageIO,BufferedImage, ImageReader, ImageWriter</li>
+</ul>
+</li>
+</ul>
+<h3 id="Java图像关键类描述"><a href="#Java图像关键类描述" class="headerlink" title="Java图像关键类描述"></a>Java图像关键类描述</h3><ul>
+<li>Java原生支持JPG,png,bmp,wbmp,gif</li>
+<li>javax.imageio.ImageIO<ul>
+<li>自动封装多种ImageReader和ImageWriter,读写图像文件</li>
+<li>read读取图片 write写图片</li>
+</ul>
+</li>
+<li>java.awt.image.BufferedImage,图像在内存中的表示类<ul>
+<li>getHeight获取高度</li>
+<li>getWidth获取宽度</li>
+</ul>
+</li>
+<li>图像文件读写/截取/合并</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br><span class="line">163</span><br><span class="line">164</span><br><span class="line">165</span><br><span class="line">166</span><br><span class="line">167</span><br><span class="line">168</span><br><span class="line">169</span><br><span class="line">170</span><br><span class="line">171</span><br><span class="line">172</span><br><span class="line">173</span><br><span class="line">174</span><br><span class="line">175</span><br><span class="line">176</span><br><span class="line">177</span><br><span class="line">178</span><br><span class="line">179</span><br><span class="line">180</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> basic;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.awt.Rectangle;</span><br><span class="line"><span class="keyword">import</span> java.awt.image.BufferedImage;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.io.FileInputStream;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.util.Iterator;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.imageio.ImageIO;</span><br><span class="line"><span class="keyword">import</span> javax.imageio.ImageReadParam;</span><br><span class="line"><span class="keyword">import</span> javax.imageio.ImageReader;</span><br><span class="line"><span class="keyword">import</span> javax.imageio.stream.ImageInputStream;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ImageTest</span> </span>&#123;</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		readAndWrite();</span><br><span class="line">		readComparison();</span><br><span class="line">		cropImage(<span class="string">"c:/temp/ecnu.jpg"</span>, <span class="string">"c:/temp/shida.jpg"</span>, <span class="number">750</span>, <span class="number">250</span>, <span class="number">700</span>, <span class="number">300</span>, <span class="string">"jpg"</span>, <span class="string">"jpg"</span>);</span><br><span class="line">		combineImagesHorizontally(<span class="string">"c:/temp/ecnu.jpg"</span>,<span class="string">"c:/temp/ecnu.jpg"</span>,<span class="string">"jpg"</span>, <span class="string">"c:/temp/ecnu2.jpg"</span>);</span><br><span class="line">		combineImagesVertically(<span class="string">"c:/temp/ecnu.jpg"</span>,<span class="string">"c:/temp/ecnu.jpg"</span>,<span class="string">"jpg"</span>, <span class="string">"c:/temp/ecnu3.jpg"</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">readAndWrite</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		BufferedImage image = ImageIO.read(<span class="keyword">new</span> File(<span class="string">"c:/temp/ecnu.jpg"</span>));</span><br><span class="line">		System.out.println(<span class="string">"Height: "</span> + image.getHeight()); <span class="comment">// 高度像素</span></span><br><span class="line">		System.out.println(<span class="string">"Width: "</span> + image.getWidth()); <span class="comment">// 宽度像素</span></span><br><span class="line">		ImageIO.write(image, <span class="string">"png"</span>, <span class="keyword">new</span> File(<span class="string">"c:/temp/ecnu.png"</span>));</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">readComparison</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		System.out.println(<span class="string">"===========加载速度测试=============="</span>);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// ImageIO需要测试图片的类型，加载合适的ImageReader来读取图片，耗时更长</span></span><br><span class="line">		<span class="keyword">long</span> startTime = System.nanoTime();</span><br><span class="line">		BufferedImage image = ImageIO.read(<span class="keyword">new</span> File(<span class="string">"c:/temp/ecnu.jpg"</span>));</span><br><span class="line">		System.out.println(<span class="string">"Height: "</span> + image.getHeight()); <span class="comment">// 高度像素</span></span><br><span class="line">		System.out.println(<span class="string">"Width: "</span> + image.getWidth()); <span class="comment">// 宽度像素</span></span><br><span class="line">		<span class="keyword">long</span> endTime = System.nanoTime();</span><br><span class="line">		System.out.println((endTime - startTime) / <span class="number">1000000.0</span> + <span class="string">"毫秒"</span>);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// 指定用jpg Reader来加载，速度会加快</span></span><br><span class="line">		startTime = System.nanoTime();</span><br><span class="line">		Iterator&lt;ImageReader&gt; readers = ImageIO.getImageReadersByFormatName(<span class="string">"jpg"</span>);</span><br><span class="line">		ImageReader reader = (ImageReader) readers.next();</span><br><span class="line">		System.out.println(reader.getClass().getName());</span><br><span class="line">		ImageInputStream iis = ImageIO.createImageInputStream(<span class="keyword">new</span> File(<span class="string">"c:/temp/ecnu.jpg"</span>));</span><br><span class="line">		reader.setInput(iis, <span class="keyword">true</span>);</span><br><span class="line">		System.out.println(<span class="string">"Height:"</span> + reader.getHeight(<span class="number">0</span>));</span><br><span class="line">		System.out.println(<span class="string">"Width:"</span> + reader.getWidth(<span class="number">0</span>));</span><br><span class="line">		endTime = System.nanoTime();</span><br><span class="line">		System.out.println((endTime - startTime) / <span class="number">1000000.0</span> + <span class="string">"毫秒"</span>);</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">	 * cropImage 将原始图片文件切割一个矩形，并输出到目标图片文件</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> fromPath 原始图片</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> toPath  目标图片</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> x       坐标起点x</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> y       坐标起点y</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> width   矩形宽度</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> height  矩形高度</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> readImageFormat  原始文件格式</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@param</span> writeImageFormat 目标文件格式</span></span><br><span class="line"><span class="comment">	 * <span class="doctag">@throws</span> Exception</span></span><br><span class="line"><span class="comment">	 */</span></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">cropImage</span><span class="params">(String fromPath, String toPath, <span class="keyword">int</span> x, <span class="keyword">int</span> y, <span class="keyword">int</span> width, <span class="keyword">int</span> height, String readImageFormat,</span></span></span><br><span class="line"><span class="function"><span class="params">			String writeImageFormat)</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">		FileInputStream fis = <span class="keyword">null</span>;</span><br><span class="line">		ImageInputStream iis = <span class="keyword">null</span>;</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			<span class="comment">// 读取原始图片文件</span></span><br><span class="line">			fis = <span class="keyword">new</span> FileInputStream(fromPath);</span><br><span class="line">			Iterator&lt;ImageReader&gt; it = ImageIO.getImageReadersByFormatName(readImageFormat);</span><br><span class="line">			ImageReader reader = it.next();			</span><br><span class="line">			iis = ImageIO.createImageInputStream(fis);</span><br><span class="line">			reader.setInput(iis, <span class="keyword">true</span>);</span><br><span class="line">			</span><br><span class="line">			<span class="comment">// 定义一个矩形 并放入切割参数中</span></span><br><span class="line">			ImageReadParam param = reader.getDefaultReadParam();			</span><br><span class="line">			Rectangle rect = <span class="keyword">new</span> Rectangle(x, y, width, height);			</span><br><span class="line">			param.setSourceRegion(rect);</span><br><span class="line">			</span><br><span class="line">			<span class="comment">//从源文件读取一个矩形大小的图像</span></span><br><span class="line">			BufferedImage bi = reader.read(<span class="number">0</span>, param);</span><br><span class="line">			</span><br><span class="line">			<span class="comment">//写入到目标文件</span></span><br><span class="line">			ImageIO.write(bi, writeImageFormat, <span class="keyword">new</span> File(toPath));</span><br><span class="line">		&#125; <span class="keyword">finally</span> &#123;</span><br><span class="line">			fis.close();</span><br><span class="line">			iis.close();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 横向拼接两张图片，并写入到目标文件</span></span><br><span class="line"><span class="comment">     * 拼接的本质，就是申请一个大的新空间，然后将原始的图片像素点拷贝到新空间，最后保存</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> firstPath 第一张图片的路径</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> secondPath    第二张图片的路径</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> imageFormat   拼接生成图片的格式</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> toPath    目标图片的路径</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">combineImagesHorizontally</span><span class="params">(String firstPath, String secondPath,String imageFormat, String toPath)</span></span>&#123;  </span><br><span class="line">        <span class="keyword">try</span> &#123;  </span><br><span class="line">            <span class="comment">//读取第一张图片    </span></span><br><span class="line">            File  first  =  <span class="keyword">new</span>  File(firstPath);    </span><br><span class="line">            BufferedImage  imageOne = ImageIO.read(first);    </span><br><span class="line">            <span class="keyword">int</span>  width1  =  imageOne.getWidth();<span class="comment">//图片宽度    </span></span><br><span class="line">            <span class="keyword">int</span>  height1  =  imageOne.getHeight();<span class="comment">//图片高度    </span></span><br><span class="line">            <span class="comment">//从第一张图片中读取RGB    </span></span><br><span class="line">            <span class="keyword">int</span>[]  firstRGB  =  <span class="keyword">new</span>  <span class="keyword">int</span>[width1*height1];    </span><br><span class="line">            firstRGB  =  imageOne.getRGB(<span class="number">0</span>,<span class="number">0</span>,width1,height1,firstRGB,<span class="number">0</span>,width1);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//对第二张图片做同样的处理</span></span><br><span class="line">            File  second  =  <span class="keyword">new</span>  File(secondPath);</span><br><span class="line">            BufferedImage  imageTwo  =  ImageIO.read(second);</span><br><span class="line">            <span class="keyword">int</span> width2 = imageTwo.getWidth();</span><br><span class="line">            <span class="keyword">int</span> height2 = imageTwo.getHeight();</span><br><span class="line">            <span class="keyword">int</span>[]   secondRGB  =  <span class="keyword">new</span>  <span class="keyword">int</span>[width2*height2];</span><br><span class="line">            secondRGB  =  imageTwo.getRGB(<span class="number">0</span>,<span class="number">0</span>,width2,height2,secondRGB,<span class="number">0</span>,width2);</span><br><span class="line">            <span class="comment">//生成新图片</span></span><br><span class="line">            <span class="keyword">int</span> height3 = (height1&gt;height2)?height1:height2; <span class="comment">//挑选高度大的，作为目标文件的高度</span></span><br><span class="line">            <span class="keyword">int</span> width3  = width1 + width2;                   <span class="comment">//宽度，两张图片相加</span></span><br><span class="line">            BufferedImage  imageNew  =  <span class="keyword">new</span>  BufferedImage(width3,height3,BufferedImage.TYPE_INT_RGB);    </span><br><span class="line">            </span><br><span class="line">            <span class="comment">//设置左半部分的RGB 从(0,0) 开始 </span></span><br><span class="line">            imageNew.setRGB(<span class="number">0</span>,<span class="number">0</span>,width1,height1,firstRGB,<span class="number">0</span>,width1); </span><br><span class="line">            <span class="comment">//设置右半部分的RGB 从(width1, 0) 开始 </span></span><br><span class="line">            imageNew.setRGB(width1,<span class="number">0</span>,width2,height2,secondRGB,<span class="number">0</span>,width2);</span><br><span class="line">               </span><br><span class="line">            <span class="comment">//保存图片</span></span><br><span class="line">            ImageIO.write(imageNew,  imageFormat,  <span class="keyword">new</span>  File(toPath));</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;  </span><br><span class="line">            e.printStackTrace();  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">/**</span></span><br><span class="line"><span class="comment">     * 纵向拼接图片（两张）</span></span><br><span class="line"><span class="comment">     * 拼接的本质，就是申请一个大的新空间，然后将原始的图片像素点拷贝到新空间，最后保存</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> firstPath 读取的第一张图片</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> secondPath    读取的第二张图片</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> imageFormat 图片写入格式</span></span><br><span class="line"><span class="comment">     * <span class="doctag">@param</span> toPath    图片写入路径</span></span><br><span class="line"><span class="comment">     */</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">combineImagesVertically</span><span class="params">(String firstPath, String secondPath,String imageFormat, String toPath)</span></span>&#123;  </span><br><span class="line">        <span class="keyword">try</span> &#123;  </span><br><span class="line">            <span class="comment">//读取第一张图片    </span></span><br><span class="line">            File  first  =  <span class="keyword">new</span>  File(firstPath);    </span><br><span class="line">            BufferedImage  imageOne = ImageIO.read(first);    </span><br><span class="line">            <span class="keyword">int</span>  width1  =  imageOne.getWidth();<span class="comment">//图片宽度    </span></span><br><span class="line">            <span class="keyword">int</span>  height1  =  imageOne.getHeight();<span class="comment">//图片高度    </span></span><br><span class="line">            <span class="comment">//从图片中读取RGB    </span></span><br><span class="line">            <span class="keyword">int</span>[]  firstRGB  =  <span class="keyword">new</span>  <span class="keyword">int</span>[width1*height1];    </span><br><span class="line">            firstRGB  =  imageOne.getRGB(<span class="number">0</span>,<span class="number">0</span>,width1,height1,firstRGB,<span class="number">0</span>,width1);    </span><br><span class="line"></span><br><span class="line">            <span class="comment">//对第二张图片做相同的处理    </span></span><br><span class="line">            File  second  =  <span class="keyword">new</span>  File(secondPath);    </span><br><span class="line">            BufferedImage  imageTwo  =  ImageIO.read(second); </span><br><span class="line">            <span class="keyword">int</span> width2 = imageTwo.getWidth();</span><br><span class="line">            <span class="keyword">int</span> height2 = imageTwo.getHeight();</span><br><span class="line">            <span class="keyword">int</span>[]   secondRGB  =  <span class="keyword">new</span>  <span class="keyword">int</span>[width2*height2];    </span><br><span class="line">            secondRGB  =  imageTwo.getRGB(<span class="number">0</span>,<span class="number">0</span>,width2,height2,secondRGB,<span class="number">0</span>,width2); </span><br><span class="line"></span><br><span class="line">            <span class="comment">//生成新图片</span></span><br><span class="line">            <span class="keyword">int</span> width3 = (width1&gt;width2)?width1:width2; <span class="comment">//挑选宽度大的，作为目标文件的宽度</span></span><br><span class="line">            <span class="keyword">int</span> height3 = height1+height2;              <span class="comment">//高度，两张图片相加</span></span><br><span class="line">            BufferedImage  imageNew  =  <span class="keyword">new</span>  BufferedImage(width3,height3,BufferedImage.TYPE_INT_RGB);    </span><br><span class="line">            <span class="comment">//设置上半部分的RGB 从(0,0) 开始 </span></span><br><span class="line">            imageNew.setRGB(<span class="number">0</span>,<span class="number">0</span>,width1,height1,firstRGB,<span class="number">0</span>,width1);</span><br><span class="line">            <span class="comment">//设置下半部分的RGB 从(0, height1) 开始 </span></span><br><span class="line">            imageNew.setRGB(<span class="number">0</span>,height1,width2,height2,secondRGB,<span class="number">0</span>,width2);  </span><br><span class="line"></span><br><span class="line">            <span class="comment">//保存图片</span></span><br><span class="line">            ImageIO.write(imageNew, imageFormat, <span class="keyword">new</span> File(toPath));</span><br><span class="line">        &#125; <span class="keyword">catch</span> (Exception e) &#123;  </span><br><span class="line">            e.printStackTrace();  </span><br><span class="line">        &#125;  </span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="验证码生成"><a href="#验证码生成" class="headerlink" title="验证码生成"></a>验证码生成</h3><ul>
+<li>验证码，一个图片文件<ul>
+<li>外框</li>
+<li>底色</li>
+<li>干扰线<ul>
+<li>随机产生一些直线</li>
+</ul>
+</li>
+<li>字母<ul>
+<li>字母选择，不要0，o，1，I，L</li>
+<li>字母颜色（RGB）</li>
+<li>字母位置</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> code;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.awt.Color;</span><br><span class="line"><span class="keyword">import</span> java.awt.Font;</span><br><span class="line"><span class="keyword">import</span> java.awt.Graphics2D;</span><br><span class="line"><span class="keyword">import</span> java.awt.image.BufferedImage;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.util.Random;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.imageio.ImageIO;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">ValidateCodeTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="comment">//没有1 I L 0 o</span></span><br><span class="line">	<span class="keyword">static</span> <span class="keyword">char</span>[] codeSequence = &#123; <span class="string">'A'</span>, <span class="string">'B'</span>, <span class="string">'C'</span>, <span class="string">'D'</span>, <span class="string">'E'</span>, <span class="string">'F'</span>, <span class="string">'G'</span>, <span class="string">'H'</span>, <span class="string">'J'</span>, <span class="string">'K'</span>, <span class="string">'M'</span>, <span class="string">'N'</span>, <span class="string">'P'</span>, <span class="string">'Q'</span>, <span class="string">'R'</span>, <span class="string">'S'</span>, <span class="string">'T'</span>,</span><br><span class="line">			<span class="string">'U'</span>, <span class="string">'V'</span>, <span class="string">'W'</span>, <span class="string">'X'</span>, <span class="string">'Y'</span>, <span class="string">'Z'</span>, <span class="string">'2'</span>, <span class="string">'3'</span>, <span class="string">'4'</span>, <span class="string">'5'</span>, <span class="string">'6'</span>, <span class="string">'7'</span>, <span class="string">'8'</span>, <span class="string">'9'</span> &#125;;</span><br><span class="line">	<span class="keyword">static</span> <span class="keyword">int</span> charNum = codeSequence.length;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] a)</span> <span class="keyword">throws</span> IOException</span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		generateCode(<span class="string">"c:/temp/code.jpg"</span>);</span><br><span class="line">	&#125;	</span><br><span class="line">	</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">generateCode</span><span class="params">(String filePath)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">		<span class="comment">// 首先定义验证码图片框  </span></span><br><span class="line">		<span class="keyword">int</span> width = <span class="number">80</span>; <span class="comment">// 验证码图片的宽度</span></span><br><span class="line">		<span class="keyword">int</span> height = <span class="number">32</span>; <span class="comment">// 验证码图片的高度</span></span><br><span class="line">        BufferedImage buffImg = <span class="keyword">new</span> BufferedImage(width, height, BufferedImage.TYPE_INT_RGB); </span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">        <span class="comment">//定义图片上的图形和干扰线</span></span><br><span class="line">        Graphics2D gd = buffImg.createGraphics();   </span><br><span class="line">        gd.setColor(Color.LIGHT_GRAY);   <span class="comment">// 将图像填充为浅灰色   </span></span><br><span class="line">        gd.fillRect(<span class="number">0</span>, <span class="number">0</span>, width, height);   </span><br><span class="line">        gd.setColor(Color.BLACK);        <span class="comment">// 画边框。   </span></span><br><span class="line">        gd.drawRect(<span class="number">0</span>, <span class="number">0</span>, width - <span class="number">1</span>, height - <span class="number">1</span>);   </span><br><span class="line">        <span class="comment">// 随机产生16条灰色干扰线，使图像中的认证码不易识别  </span></span><br><span class="line">        gd.setColor(Color.gray); </span><br><span class="line">        <span class="comment">// 创建一个随机数生成器类   用于随机产生干扰线</span></span><br><span class="line">        Random random = <span class="keyword">new</span> Random();   </span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; <span class="number">16</span>; i++) &#123;   </span><br><span class="line">            <span class="keyword">int</span> x = random.nextInt(width);   </span><br><span class="line">            <span class="keyword">int</span> y = random.nextInt(height);   </span><br><span class="line">            <span class="keyword">int</span> xl = random.nextInt(<span class="number">12</span>);   </span><br><span class="line">            <span class="keyword">int</span> yl = random.nextInt(<span class="number">12</span>);   </span><br><span class="line">            gd.drawLine(x, y, x + xl, y + yl);   </span><br><span class="line">        &#125;   </span><br><span class="line">        </span><br><span class="line">        </span><br><span class="line">        <span class="comment">//计算字的位置坐标</span></span><br><span class="line">        <span class="keyword">int</span> codeCount = <span class="number">4</span>; <span class="comment">// 字符个数</span></span><br><span class="line">    	<span class="keyword">int</span> fontHeight; <span class="comment">// 字体高度</span></span><br><span class="line">    	<span class="keyword">int</span> codeX; <span class="comment">// 第一个字符的x坐标，因为后面的字符坐标依次递增，所以它们的x轴值是codeX的倍数</span></span><br><span class="line">    	<span class="keyword">int</span> codeY; <span class="comment">// 验证字符的y坐标，因为并排所以值一样</span></span><br><span class="line">    	<span class="comment">// width-4 除去左右多余的位置，使验证码更加集中显示，减得越多越集中。</span></span><br><span class="line">    	<span class="comment">// codeCount+1 //等比分配显示的宽度，包括左右两边的空格</span></span><br><span class="line">    	codeX = (width - <span class="number">4</span>) / (codeCount + <span class="number">1</span>); <span class="comment">//第一个字母的起始位置    	</span></span><br><span class="line">    	fontHeight = height - <span class="number">10</span>;  <span class="comment">// height - 10 高度中间区域显示验证码</span></span><br><span class="line">    	codeY = height - <span class="number">7</span>;</span><br><span class="line">    			</span><br><span class="line">    			</span><br><span class="line">        <span class="comment">// 创建字体，字体的大小应该根据图片的高度来定。   </span></span><br><span class="line">        Font font = <span class="keyword">new</span> Font(<span class="string">"Fixedsys"</span>, Font.PLAIN, fontHeight);           </span><br><span class="line">        gd.setFont(font);   </span><br><span class="line">        </span><br><span class="line">        <span class="comment">// 随机产生codeCount数字的验证码。   </span></span><br><span class="line">        <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; codeCount; i++) &#123;   </span><br><span class="line">            <span class="comment">// 每次随机拿一个字母，赋予随机的颜色  </span></span><br><span class="line">            String strRand = String.valueOf(codeSequence[random.nextInt(charNum)]);   </span><br><span class="line">            <span class="keyword">int</span> red = random.nextInt(<span class="number">255</span>);   </span><br><span class="line">            <span class="keyword">int</span> green = random.nextInt(<span class="number">255</span>);   </span><br><span class="line">            <span class="keyword">int</span> blue = random.nextInt(<span class="number">255</span>);   </span><br><span class="line">            gd.setColor(<span class="keyword">new</span> Color(red,green,blue));   </span><br><span class="line">            <span class="comment">//把字放到图片上!!!</span></span><br><span class="line">            gd.drawString(strRand, (i + <span class="number">1</span>) * codeX, codeY);</span><br><span class="line">        &#125;   </span><br><span class="line">        </span><br><span class="line">        ImageIO.write(buffImg, <span class="string">"jpg"</span>, <span class="keyword">new</span> File(filePath));             </span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h2 id="统计图生成"><a href="#统计图生成" class="headerlink" title="统计图生成"></a>统计图生成</h2><ul>
+<li>统计图<ul>
+<li>柱状图/饼图/折线图</li>
+<li>Java原生的Graphics2D可以画，比较繁琐</li>
+<li>基于jFreeChart可以快速生成统计图生成<ul>
+<li>设定数据集</li>
+<li>调用ChartFactory生成图形<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> charts;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.awt.Font;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.jfree.chart.ChartFactory;</span><br><span class="line"><span class="keyword">import</span> org.jfree.chart.ChartUtilities;</span><br><span class="line"><span class="keyword">import</span> org.jfree.chart.JFreeChart;</span><br><span class="line"><span class="keyword">import</span> org.jfree.chart.StandardChartTheme;</span><br><span class="line"><span class="keyword">import</span> org.jfree.chart.plot.PlotOrientation;</span><br><span class="line"><span class="keyword">import</span> org.jfree.data.category.DefaultCategoryDataset;</span><br><span class="line"><span class="keyword">import</span> org.jfree.data.general.DefaultPieDataset;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JFreeChartTest</span> </span>&#123;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">		writeBar(<span class="string">"c:/temp/bar.jpg"</span>); <span class="comment">// 柱状图</span></span><br><span class="line">		writePie(<span class="string">"c:/temp/pie.jpg"</span>); <span class="comment">// 饼图</span></span><br><span class="line">		writeLine(<span class="string">"c:/temp/line.jpg"</span>);<span class="comment">// 折线图</span></span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> StandardChartTheme <span class="title">getChineseTheme</span><span class="params">()</span></span></span><br><span class="line"><span class="function">	</span>&#123;</span><br><span class="line">		StandardChartTheme chineseTheme = <span class="keyword">new</span> StandardChartTheme(<span class="string">"CN"</span>);</span><br><span class="line">		chineseTheme.setExtraLargeFont(<span class="keyword">new</span> Font(<span class="string">"隶书"</span>, Font.BOLD, <span class="number">20</span>));</span><br><span class="line">		chineseTheme.setRegularFont(<span class="keyword">new</span> Font(<span class="string">"宋书"</span>, Font.PLAIN, <span class="number">15</span>));</span><br><span class="line">		chineseTheme.setLargeFont(<span class="keyword">new</span> Font(<span class="string">"宋书"</span>, Font.PLAIN, <span class="number">15</span>));</span><br><span class="line">		<span class="keyword">return</span> chineseTheme;</span><br><span class="line">	&#125;</span><br><span class="line">	</span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">writeBar</span><span class="params">(String fileName)</span> </span>&#123;</span><br><span class="line">		DefaultCategoryDataset dataset = <span class="keyword">new</span> DefaultCategoryDataset();</span><br><span class="line">		dataset.addValue(<span class="number">11</span>, <span class="string">""</span>, <span class="string">"第一季度"</span>);</span><br><span class="line">		dataset.addValue(<span class="number">41</span>, <span class="string">""</span>, <span class="string">"第二季度"</span>);</span><br><span class="line">		dataset.addValue(<span class="number">51</span>, <span class="string">""</span>, <span class="string">"第三季度"</span>);</span><br><span class="line">		dataset.addValue(<span class="number">4</span>, <span class="string">""</span>, <span class="string">"第四季度"</span>);</span><br><span class="line"></span><br><span class="line">		<span class="comment">// PlotOrientation.HORIZONTAL横向 PlotOrientation.VERTICAL 竖向</span></span><br><span class="line">		<span class="comment">// 引入中文主题样式</span></span><br><span class="line">		ChartFactory.setChartTheme(getChineseTheme());</span><br><span class="line">		JFreeChart chart = ChartFactory.createBarChart3D(<span class="string">"柱状图"</span>, <span class="string">"2018年"</span>, <span class="string">"产品总量"</span>, dataset, PlotOrientation.VERTICAL,</span><br><span class="line">				<span class="keyword">false</span>, <span class="keyword">false</span>, <span class="keyword">false</span>);</span><br><span class="line"></span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			ChartUtilities.saveChartAsJPEG(<span class="keyword">new</span> File(fileName), chart, <span class="number">600</span>, <span class="number">300</span>);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (IOException e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line"></span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">writePie</span><span class="params">(String fileName)</span> </span>&#123;</span><br><span class="line">		DefaultPieDataset pds = <span class="keyword">new</span> DefaultPieDataset();</span><br><span class="line">		pds.setValue(<span class="string">"C人数"</span>, <span class="number">100</span>);</span><br><span class="line">		pds.setValue(<span class="string">"C++人数"</span>, <span class="number">200</span>);</span><br><span class="line">		pds.setValue(<span class="string">"Java人数"</span>, <span class="number">300</span>);</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			ChartFactory.setChartTheme(getChineseTheme());</span><br><span class="line">			JFreeChart chart = ChartFactory.createPieChart(<span class="string">"饼图"</span>, pds);</span><br><span class="line">			</span><br><span class="line">			ChartUtilities.saveChartAsJPEG(<span class="keyword">new</span> File(fileName), chart, <span class="number">600</span>, <span class="number">300</span>);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line"></span><br><span class="line">	<span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">writeLine</span><span class="params">(String fileName)</span> </span>&#123;</span><br><span class="line">		DefaultCategoryDataset lines = <span class="keyword">new</span> DefaultCategoryDataset();</span><br><span class="line">		<span class="comment">//第一条线</span></span><br><span class="line">		lines.addValue(<span class="number">100</span>, <span class="string">"Java核心技术"</span>, <span class="string">"1月"</span>);</span><br><span class="line">		lines.addValue(<span class="number">200</span>, <span class="string">"Java核心技术"</span>, <span class="string">"2月"</span>);</span><br><span class="line">		lines.addValue(<span class="number">400</span>, <span class="string">"Java核心技术"</span>, <span class="string">"3月"</span>);</span><br><span class="line">		lines.addValue(<span class="number">500</span>, <span class="string">"Java核心技术"</span>, <span class="string">"4月"</span>);</span><br><span class="line">		</span><br><span class="line">		<span class="comment">//第二条线</span></span><br><span class="line">		lines.addValue(<span class="number">100</span>, <span class="string">"Java核心技术(进阶)"</span>, <span class="string">"1月"</span>);</span><br><span class="line">		lines.addValue(<span class="number">400</span>, <span class="string">"Java核心技术(进阶)"</span>, <span class="string">"2月"</span>);</span><br><span class="line">		lines.addValue(<span class="number">900</span>, <span class="string">"Java核心技术(进阶)"</span>, <span class="string">"3月"</span>);</span><br><span class="line">		<span class="keyword">try</span> &#123;</span><br><span class="line">			ChartFactory.setChartTheme(getChineseTheme());</span><br><span class="line">			JFreeChart chart = ChartFactory.createLineChart(<span class="string">"折线图"</span>, <span class="string">"时间"</span>, <span class="string">"人数"</span>, lines);</span><br><span class="line">			ChartUtilities.saveChartAsJPEG(<span class="keyword">new</span> File(fileName), chart, <span class="number">600</span>, <span class="number">300</span>);</span><br><span class="line">		&#125; <span class="keyword">catch</span> (Exception e) &#123;</span><br><span class="line">			e.printStackTrace();</span><br><span class="line">		&#125;</span><br><span class="line">	&#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="第四节总结"><a href="#第四节总结" class="headerlink" title="第四节总结"></a>第四节总结</h3><ul>
+<li>Java的AWT包提供了一些基础的图形工具Graphics2D</li>
+<li>javax的imageio包提供了基础的图像读写和剪辑</li>
+<li>借助第三方库jFreeChart完成统计类图</li>
+<li>API很多，需要多查询，多练习。</li>
+</ul>
+<h2 id="条形码和二维码简介及解析"><a href="#条形码和二维码简介及解析" class="headerlink" title="条形码和二维码简介及解析"></a>条形码和二维码简介及解析</h2>
+      
+      <!-- reward -->
+      
+      <div id="reward-btn">
+        打赏
+      </div>
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+        <div class="declare">
+          <ul class="post-copyright">
+            <li>
+              <i class="ri-copyright-line"></i>
+              <strong>版权声明： </strong s>
+              本博客所有文章除特别声明外，均采用 <a href="https://www.apache.org/licenses/LICENSE-2.0.html" rel="external nofollow"
+                target="_blank">Apache License 2.0</a> 许可协议。转载请注明出处！
+            </li>
+          </ul>
+        </div>
+        
+    <footer class="article-footer">
+      
+          
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://yoursite.com/2020/05/01/Java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF-%E8%BF%9B%E9%98%B6-%E7%AC%AC%E5%9B%9B%E7%AB%A0-%E9%AB%98%E7%BA%A7%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86-%E7%BB%AD/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>
+      
+      
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+    
+      <a href="/2020/05/01/Java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF-%E8%BF%9B%E9%98%B6-%E7%AC%AC%E5%9B%9B%E7%AB%A0-%E9%AB%98%E7%BA%A7%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">Java核心技术[进阶] 第四章 高级文件处理</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+  
+<!-- valine评论 -->
+<div id="vcomments-box">
+    <div id="vcomments">
+    </div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        app_id: '',
+        app_key: '',
+        path: window.location.pathname,
+        notify: 'false',
+        verify: 'false',
+        avatar: 'mp',
+        placeholder: '给我的文章加点评论吧~',
+        recordIP: true
+    });
+    const infoEle = document.querySelector('#vcomments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+        infoEle.childNodes.forEach(function (item) {
+            item.parentNode.removeChild(item);
+        });
+    }
+</script>
+<style>
+    #vcomments-box {
+        padding: 5px 30px;
+    }
+
+    @media screen and (max-width: 800px) {
+        #vcomments-box {
+            padding: 5px 0px;
+        }
+    }
+
+    #vcomments-box #vcomments {
+        background-color: #fff;
+    }
+
+    .v .vlist .vcard .vh {
+        padding-right: 20px;
+    }
+
+    .v .vlist .vcard {
+        padding-left: 10px;
+    }
+</style>
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2020
+        John Hu
+      </li>
+      <li>
+        
+        Powered by
+        
+        
+        <a href="https://hexo.io" target="_blank">Hexo</a> Theme <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <span>
+  <i>PV:<span id="busuanzi_value_page_pv"></span></i>
+  <i>UV:<span id="busuanzi_value_site_uv"></span></i>
+</span>
+        
+      </li>
+      
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="光"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="https://github.com/jhonrk" target="_blank" rel="noopener">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+      strings: ['要温暖洒脱再面朝大海', '要心存信念见春暖花开', '愿世间的光都照耀在你身上'],
+      startDelay: 0,
+      typeSpeed: 200,
+      loop: true,
+      backSpeed: 100,
+      showCursor: true
+    });
+  } catch (err) {
+  }
+
+</script>
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+
+  
+<script src="/js/clickLove.js"></script>
+
+
+
+    
+    <div id="music">
+    
+    
+    
+    <iframe frameborder="no" border="1" marginwidth="0" marginheight="0" width="200" height="52"
+        src="//music.163.com/outchain/player?type=2&id=22728974&auto=1&height=32"></iframe>
+</div>
+
+<style>
+    #music {
+        position: fixed;
+        right: 15px;
+        bottom: 0;
+        z-index: 998;
+    }
+</style>
+    
+  </div>
+</body>
+
+</html>

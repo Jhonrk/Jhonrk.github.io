@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+
+
+<html lang="zh-Hans" >
+
+
+<head>
+  <meta charset="utf-8" />
+   
+  <meta name="keywords" content="生活,代码,学习" />
+   
+  <meta name="description" content="可爱一如往常" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <title>
+    Java核心技术[进阶] 第四章 高级文件处理 |  光
+  </title>
+  <meta name="generator" content="hexo-theme-yilia-plus">
+  
+  <link rel="shortcut icon" href="/favicon.ico" />
+  
+  
+<link rel="stylesheet" href="/dist/main.css">
+
+  
+<link rel="stylesheet" href="/css/custom.css">
+
+  
+  <script src="https://cdn.jsdelivr.net/npm/pace-js@1.0.2/pace.min.js"></script>
+  
+  
+
+  
+
+</head>
+
+</html>
+
+<body>
+  <div id="app">
+    <main class="content on">
+      <section class="outer">
+  <article id="post-Java核心技术-进阶-第四章-高级文件处理" class="article article-type-post" itemscope
+  itemprop="blogPost" data-scroll-reveal>
+
+  <div class="article-inner">
+    
+    <header class="article-header">
+       
+<h1 class="article-title sea-center" style="border-left:0" itemprop="name">
+  Java核心技术[进阶] 第四章 高级文件处理
+</h1>
+ 
+
+    </header>
+    
+
+    
+    <div class="article-meta">
+      <a href="/2020/05/01/Java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF-%E8%BF%9B%E9%98%B6-%E7%AC%AC%E5%9B%9B%E7%AB%A0-%E9%AB%98%E7%BA%A7%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86/" class="article-date">
+  <time datetime="2020-05-01T00:30:42.000Z" itemprop="datePublished">2020-05-01</time>
+</a>
+      
+      
+      
+<div class="word_count">
+    <span class="post-time">
+        <span class="post-meta-item-icon">
+            <i class="ri-quill-pen-line"></i>
+            <span class="post-meta-item-text"> 字数统计:</span>
+            <span class="post-count">3.7k字</span>
+        </span>
+    </span>
+
+    <span class="post-time">
+        &nbsp; | &nbsp;
+        <span class="post-meta-item-icon">
+            <i class="ri-book-open-line"></i>
+            <span class="post-meta-item-text"> 阅读时长≈</span>
+            <span class="post-count">19分钟</span>
+        </span>
+    </span>
+</div>
+
+      
+    </div>
+    
+
+    
+    
+    <div class="tocbot"></div>
+
+
+
+
+
+    
+
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+      
+
+      
+      <h2 id="XML简介"><a href="#XML简介" class="headerlink" title="XML简介"></a>XML简介</h2><h3 id="为什么需要XML"><a href="#为什么需要XML" class="headerlink" title="为什么需要XML"></a>为什么需要XML</h3><ul>
+<li>数据是主体</li>
+<li>但是，单独的数据，它的含义很模糊</li>
+<li>数据+含义，适用于传输数据，而不是显示数据（HTML）</li>
+</ul>
+<h3 id="XML基本概念"><a href="#XML基本概念" class="headerlink" title="XML基本概念"></a>XML基本概念</h3><ul>
+<li>XML（eXtensible Markup Language），<a href="http://www.w3.org" target="_blank" rel="noopener">www.w3.org</a></li>
+<li>可扩展标记语言：意义+数据</li>
+<li>标签可自行定义，具有自我描述性</li>
+<li>纯文本表示，跨系统/平台/语言</li>
+<li>W3C标准</li>
+</ul>
+<h3 id="XML结构"><a href="#XML结构" class="headerlink" title="XML结构"></a>XML结构</h3><ul>
+<li>常规语法<ul>
+<li>任何的起始标签都必须有一个结束标签。</li>
+<li>简化写法，例如，<code>&lt;name&gt;&lt;/name&gt;</code>可以写为<code>&lt;name/&gt;</code>。</li>
+<li>大小写敏感，如<code>&lt;name&gt;</code>和<code>&lt;Name&gt;</code>不一样</li>
+<li>每个文件都要有一个根元素</li>
+<li>标签必须按合适的顺序进行嵌套，不可错位。</li>
+<li>所有的特性都必须有值，且在值得周围加上引号。</li>
+<li>需要转义字符，如”&lt;”需要用&lt;代替。</li>
+<li>注释：<!-- 注释内容 --></li>
+</ul>
+</li>
+</ul>
+<h3 id="XML扩展"><a href="#XML扩展" class="headerlink" title="XML扩展"></a>XML扩展</h3><ul>
+<li>DTD（Document Type Definition）<ul>
+<li>定义XML文档的结构</li>
+<li>使用一系列合法的元素来定义文档结构</li>
+<li>可嵌套在XML文档中，或者在XML中引用</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE note[</span><br><span class="line">    &lt;!<span class="function">ELEMENT <span class="title">note</span> <span class="params">(to,from,heading,body)</span>&gt;</span></span><br><span class="line"><span class="function">    &lt;!ELEMENT <span class="title">to</span>      <span class="params">(#PCDATA)</span>&gt;</span></span><br><span class="line"><span class="function">    &lt;!ELEMENT <span class="title">from</span>    <span class="params">(#PCDATA)</span>&gt;</span></span><br><span class="line"><span class="function">    &lt;!ELEMENT <span class="title">heading</span> <span class="params">(#PCDATA)</span>&gt;</span></span><br><span class="line"><span class="function">    &lt;!ELEMENT <span class="title">body</span>    <span class="params">(#PCDATA)</span>&gt;</span></span><br><span class="line"><span class="function">]&gt;</span></span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>XML Schema(XSD, XML Schema Definition)<ul>
+<li>定义XML文档的结构，DTD的继任者</li>
+<li>支持数据类型，可扩展，功能更完善，强大</li>
+<li>采用XML编写</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=<span class="string">"1.0"</span>&gt;</span><br><span class="line">&lt;xs:schema xmlns:xs=<span class="string">"http://www.w3.org/2001/XMLSchema"</span></span><br><span class="line">targetNamespace=<span class="string">"http://www.w3school.com.cn"</span></span><br><span class="line">xmlns=<span class="string">"http://www.w3school.com.cn"</span></span><br><span class="line">elementFormDefault=<span class="string">"qualified"</span>&gt;</span><br><span class="line"></span><br><span class="line">    &lt;xs:element name=<span class="string">"note"</span>&gt;</span><br><span class="line">        &lt;xs:complexType&gt;</span><br><span class="line">            &lt;xs:sequence&gt;</span><br><span class="line">                &lt;xs:element name=<span class="string">"to"</span>, type=<span class="string">"xs:string“/&gt;</span></span><br><span class="line"><span class="string">                &lt;xs:element name="</span>from<span class="string">", type="</span>xs:string“/&gt;</span><br><span class="line">                &lt;xs:element name=<span class="string">"heading"</span>, type=<span class="string">"xs:string“/&gt;</span></span><br><span class="line"><span class="string">                &lt;xs:element name="</span>body<span class="string">", type="</span>xs:string“/&gt;</span><br><span class="line">            &lt;/xs:sequence&gt;</span><br><span class="line">        &lt;/xs:complexType&gt;</span><br><span class="line">    &lt;/xs:element&gt;</span><br><span class="line">&lt;/xs:schema&gt;</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>XSL<ul>
+<li>扩展样式表语言</li>
+<li>XSL作用于XML，等同于CSS作用于HTML</li>
+<li>内容<ul>
+<li>XSLT：转换XML文档</li>
+<li>XPath：在XML文档中导航</li>
+<li>XSL-FO：格式化XML文档</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="XML解析"><a href="#XML解析" class="headerlink" title="XML解析"></a>XML解析</h3><ul>
+<li>XML解析方法<ul>
+<li>树结构<ul>
+<li>DOM：Document Object Model 文档对象模型，擅长（小规模）读/写</li>
+</ul>
+</li>
+<li>流结构<ul>
+<li>SAX：Simple API for XML 流机制解释器（推模式），擅长读</li>
+<li>Stax：The Streaming API for XML 流机制解释器（拉模式），擅长读，jdk6引入</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="DOM"><a href="#DOM" class="headerlink" title="DOM"></a>DOM</h3><ul>
+<li>DOM是W3C处理XML的标准API<ul>
+<li>直观易用</li>
+<li>其处理方法是讲XML整个作为类似树结构的方式读入内存中以便操作及解析，方便修改</li>
+<li>解析大数据量的XML文件，会遇到内存泄漏及程序崩溃的风险。</li>
+</ul>
+</li>
+<li>DOM类<ul>
+<li>DocumentBuilder解析类，parse方法</li>
+<li>Node节点主接口，getChildNodes返回一个NodeList</li>
+<li>NodeList节点列表，每个元素是一个Node</li>
+<li>Document文档根节点</li>
+<li>Element标签节点元素（每一个标签都是标签节点）</li>
+<li>Text节点（包含在XML元素内，都算Text节点）</li>
+<li>Attr节点（每个属性节点）</li>
+<li>查看相关例子</li>
+</ul>
+</li>
+</ul>
+<h4 id="读"><a href="#读" class="headerlink" title="读"></a>读</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> xml.dom;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.w3c.dom.Document;</span><br><span class="line"><span class="keyword">import</span> org.w3c.dom.Element;</span><br><span class="line"><span class="keyword">import</span> org.w3c.dom.Node;</span><br><span class="line"><span class="keyword">import</span> org.w3c.dom.NodeList;</span><br><span class="line"><span class="keyword">import</span> org.xml.sax.SAXException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.xml.parsers.DocumentBuilder;</span><br><span class="line"><span class="keyword">import</span> javax.xml.parsers.DocumentBuilderFactory;</span><br><span class="line"><span class="keyword">import</span> javax.xml.parsers.ParserConfigurationException;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DomReader</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        recursiveTraverse(); <span class="comment">//自上而下进行访问</span></span><br><span class="line">        System.out.println(<span class="string">"=============="</span>);</span><br><span class="line">        traverseBySearch();<span class="comment">//根据名称进行搜索</span></span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">traverseBySearch</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            DocumentBuilderFactory bdf = DocumentBuilderFactory.newInstance();</span><br><span class="line">            DocumentBuilder bd = bdf.newDocumentBuilder();</span><br><span class="line">            Document document = bd.</span><br><span class="line">                    parse(<span class="string">"D:\\chinahujiheng@outlook.com\\ideaProjects\\MOOC16-02\\users.xml"</span>);</span><br><span class="line"></span><br><span class="line">            Element rootElement = document.getDocumentElement();</span><br><span class="line">            NodeList nodeList = rootElement.getElementsByTagName(<span class="string">"name"</span>);</span><br><span class="line">            <span class="keyword">if</span> (nodeList != <span class="keyword">null</span>) &#123;</span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; nodeList.getLength(); i++) &#123;</span><br><span class="line">                    Element element = (Element)nodeList.item(i);</span><br><span class="line">                    System.out.println(element.getNodeName() + <span class="string">" = "</span> + element.getTextContent());</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ParserConfigurationException | IOException | SAXException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">recursiveTraverse</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();</span><br><span class="line">            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();</span><br><span class="line">            Document document = documentBuilder.</span><br><span class="line">                    parse(<span class="string">"D:\\chinahujiheng@outlook.com\\ideaProjects\\MOOC16-02\\users.xml"</span>);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//获取所有的一级子节点</span></span><br><span class="line">            NodeList userList = document.getChildNodes();</span><br><span class="line">            System.out.println(userList.getLength());</span><br><span class="line"></span><br><span class="line">            <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; userList.getLength(); i++) &#123;</span><br><span class="line">                Node users = userList.item(i); <span class="comment">// i user</span></span><br><span class="line"></span><br><span class="line">                NodeList nodeList = users.getChildNodes(); <span class="comment">// 获取二级子节点user的列表</span></span><br><span class="line">                System.out.println(<span class="string">"=="</span> + nodeList.getLength());</span><br><span class="line"></span><br><span class="line">                <span class="keyword">for</span> (<span class="keyword">int</span> j = <span class="number">0</span>; j &lt; nodeList.getLength(); j++) &#123;</span><br><span class="line">                    Node user = nodeList.item(j);</span><br><span class="line">                    <span class="keyword">if</span> (user.getNodeType() == Node.ELEMENT_NODE) &#123;</span><br><span class="line">                        NodeList metaList = user.getChildNodes();</span><br><span class="line">                        System.out.println(<span class="string">"===="</span> + metaList.getLength());</span><br><span class="line"></span><br><span class="line">                        <span class="keyword">for</span> (<span class="keyword">int</span> k = <span class="number">0</span>; k &lt; metaList.getLength(); k++) &#123;</span><br><span class="line">                            <span class="comment">//到最后一级文本</span></span><br><span class="line">                            Node meta = metaList.item(k);</span><br><span class="line">                            <span class="keyword">if</span> (meta.getNodeType() == Node.ELEMENT_NODE) &#123;</span><br><span class="line">                                System.out.println(meta.getNodeName() + <span class="string">":"</span> + meta.getTextContent());</span><br><span class="line">                            &#125;</span><br><span class="line">                        &#125;</span><br><span class="line">                        System.out.println();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"></span><br><span class="line">            &#125;</span><br><span class="line"></span><br><span class="line">        &#125; <span class="keyword">catch</span> (ParserConfigurationException | IOException | SAXException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"UTF-8"</span> ?&gt;</span><br><span class="line">&lt;users&gt;</span><br><span class="line">    &lt;user id=<span class="string">"0"</span>&gt;</span><br><span class="line">        &lt;name&gt;Mary&lt;/name&gt;</span><br><span class="line">        &lt;age&gt;23&lt;/age&gt;</span><br><span class="line">        &lt;sex&gt;Famale&lt;/sex&gt;</span><br><span class="line">    &lt;/user&gt;</span><br><span class="line">    &lt;user id=<span class="string">"1"</span>&gt;</span><br><span class="line">        &lt;name&gt;Mike&lt;/name&gt;</span><br><span class="line">        &lt;age&gt;24&lt;/age&gt;</span><br><span class="line">        &lt;sex&gt;Male&lt;/sex&gt;</span><br><span class="line">    &lt;/user&gt;</span><br><span class="line">    &lt;user id=<span class="string">"2"</span>&gt;</span><br><span class="line">        &lt;name&gt;Alice&lt;/name&gt;</span><br><span class="line">        &lt;age&gt;23&lt;/age&gt;</span><br><span class="line">        &lt;sex&gt;Famale&lt;/sex&gt;</span><br><span class="line">    &lt;/user&gt;</span><br><span class="line">    &lt;user id=<span class="string">"3"</span>&gt;</span><br><span class="line">        &lt;name&gt;Tom&lt;/name&gt;</span><br><span class="line">        &lt;age&gt;23&lt;/age&gt;</span><br><span class="line">        &lt;sex&gt;Male&lt;/sex&gt;</span><br><span class="line">    &lt;/user&gt;</span><br><span class="line">&lt;/users&gt;</span><br></pre></td></tr></table></figure>
+
+<h4 id="写"><a href="#写" class="headerlink" title="写"></a>写</h4><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> xml.dom;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.w3c.dom.Document;</span><br><span class="line"><span class="keyword">import</span> org.w3c.dom.Element;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.xml.parsers.DocumentBuilder;</span><br><span class="line"><span class="keyword">import</span> javax.xml.parsers.DocumentBuilderFactory;</span><br><span class="line"><span class="keyword">import</span> javax.xml.parsers.ParserConfigurationException;</span><br><span class="line"><span class="keyword">import</span> javax.xml.transform.Transformer;</span><br><span class="line"><span class="keyword">import</span> javax.xml.transform.TransformerConfigurationException;</span><br><span class="line"><span class="keyword">import</span> javax.xml.transform.TransformerException;</span><br><span class="line"><span class="keyword">import</span> javax.xml.transform.TransformerFactory;</span><br><span class="line"><span class="keyword">import</span> javax.xml.transform.dom.DOMSource;</span><br><span class="line"><span class="keyword">import</span> javax.xml.transform.stream.StreamResult;</span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">DomWriter</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();</span><br><span class="line">            DocumentBuilder documentBuilder = documentBuilderFactory.newDocumentBuilder();</span><br><span class="line"></span><br><span class="line">            Document document = documentBuilder.newDocument();</span><br><span class="line">            <span class="keyword">if</span> (document != <span class="keyword">null</span>) &#123;</span><br><span class="line">                Element docx = document.createElement(<span class="string">"document"</span>); <span class="comment">//都是采用Document创建元素</span></span><br><span class="line">                Element element = document.createElement(<span class="string">"element"</span>);</span><br><span class="line">                element.setAttribute(<span class="string">"type"</span>, <span class="string">"paragraph"</span>);</span><br><span class="line">                element.setAttribute(<span class="string">"alignment"</span>, <span class="string">"left"</span>); <span class="comment">//element增加2个属性</span></span><br><span class="line"></span><br><span class="line">                Element object = document.createElement(<span class="string">"object"</span>);</span><br><span class="line">                object.setAttribute(<span class="string">"type"</span>, <span class="string">"text"</span>);</span><br><span class="line"></span><br><span class="line">                Element text = document.createElement(<span class="string">"text"</span>);</span><br><span class="line">                text.appendChild(document.createTextNode(<span class="string">"abcdefg"</span>)); <span class="comment">//给text节点赋值</span></span><br><span class="line">                Element bold = document.createElement(<span class="string">"bold"</span>);</span><br><span class="line">                bold.appendChild(document.createTextNode(<span class="string">"true"</span>));</span><br><span class="line"></span><br><span class="line">                object.appendChild(text);</span><br><span class="line">                object.appendChild(bold);</span><br><span class="line">                element.appendChild(object);</span><br><span class="line">                docx.appendChild(element);</span><br><span class="line">                document.appendChild(docx);</span><br><span class="line"></span><br><span class="line">                TransformerFactory transformerFactory = TransformerFactory.newInstance();</span><br><span class="line">                Transformer transformer = transformerFactory.newTransformer();</span><br><span class="line">                DOMSource source = <span class="keyword">new</span> DOMSource(document);</span><br><span class="line"></span><br><span class="line">                File file = <span class="keyword">new</span> File(<span class="string">"dom_result.xml"</span>);</span><br><span class="line">                StreamResult result = <span class="keyword">new</span> StreamResult(file);</span><br><span class="line"></span><br><span class="line">                transformer.transform(source, result);</span><br><span class="line"></span><br><span class="line">                System.out.println(<span class="string">"write xml file successfully"</span>);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (ParserConfigurationException | TransformerException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">&lt;?xml version=<span class="string">"1.0"</span> encoding=<span class="string">"UTF-8"</span> standalone=<span class="string">"no"</span>?&gt;</span><br><span class="line">&lt;document&gt;</span><br><span class="line">    &lt;element alignment=<span class="string">"left"</span> type=<span class="string">"paragraph"</span>&gt;</span><br><span class="line">        &lt;object type=<span class="string">"text"</span>&gt;</span><br><span class="line">            &lt;text&gt;abcdefg&lt;/text&gt;</span><br><span class="line">            &lt;bold&gt;true&lt;/bold&gt;</span><br><span class="line">        &lt;/object&gt;</span><br><span class="line">    &lt;/element&gt;</span><br><span class="line">&lt;/document&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="SAX"><a href="#SAX" class="headerlink" title="SAX"></a>SAX</h3><ul>
+<li>Simple API for XML<ul>
+<li>采用事件/流模型来解析XML文档，更快速，更轻量</li>
+<li>有选择的解析和访问，不想DOM加载整个文档，内存要求很低</li>
+<li>SAX对XML文档的解析为一次性读取，不创建/不存储文档对象，很难同时访问文档中的多处数据  </li>
+<li>推模型，当它没发现一个节点就引发一个事件，而我们需要编写这些事件的处理程序。关键类：DefaultHandler  </li>
+</ul>
+</li>
+<li>查看相关例子</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> xml.sax;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> org.xml.sax.Attributes;</span><br><span class="line"><span class="keyword">import</span> org.xml.sax.SAXException;</span><br><span class="line"><span class="keyword">import</span> org.xml.sax.XMLReader;</span><br><span class="line"><span class="keyword">import</span> org.xml.sax.helpers.DefaultHandler;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.xml.parsers.ParserConfigurationException;</span><br><span class="line"><span class="keyword">import</span> javax.xml.parsers.SAXParser;</span><br><span class="line"><span class="keyword">import</span> javax.xml.parsers.SAXParserFactory;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">SAXReader</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> ParserConfigurationException, SAXException, IOException </span>&#123;</span><br><span class="line">        SAXParserFactory saxParserFactory = SAXParserFactory.newInstance();</span><br><span class="line">        SAXParser parser = saxParserFactory.newSAXParser();</span><br><span class="line">        XMLReader xmlReader = parser.getXMLReader();</span><br><span class="line">        BookHandler bookHandler = <span class="keyword">new</span> BookHandler();</span><br><span class="line">        xmlReader.setContentHandler(bookHandler);</span><br><span class="line">        xmlReader.parse(<span class="string">"books.xml"</span>);</span><br><span class="line">        System.out.println(bookHandler.getNameList());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BookHandler</span> <span class="keyword">extends</span> <span class="title">DefaultHandler</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> List&lt;String&gt; nameList;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">boolean</span> title = <span class="keyword">false</span>;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">public</span> List&lt;String&gt; <span class="title">getNameList</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>.nameList;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//xml文档加载时</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startDocument</span><span class="params">()</span> <span class="keyword">throws</span> SAXException</span>&#123;</span><br><span class="line">        System.out.println(<span class="string">"Start parsing document..."</span>);</span><br><span class="line">        nameList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//文档解析结束</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">endDocument</span><span class="params">()</span> <span class="keyword">throws</span> SAXException </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.endDocument();</span><br><span class="line">        System.out.println(<span class="string">"End"</span>);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//访问某一个元素</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">startElement</span><span class="params">(String uri, String localName, String qName, Attributes attributes)</span> <span class="keyword">throws</span> SAXException </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.startElement(uri, localName, qName, attributes);</span><br><span class="line">        <span class="keyword">if</span> (<span class="string">"title"</span>.equals(qName)) &#123;</span><br><span class="line">            <span class="keyword">this</span>.title = <span class="keyword">true</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//结束访问元素</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">endElement</span><span class="params">(String uri, String localName, String qName)</span> <span class="keyword">throws</span> SAXException </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.endElement(uri, localName, qName);</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.title) &#123;</span><br><span class="line">            <span class="keyword">this</span>.title = <span class="keyword">false</span>;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">//访问元素正文</span></span><br><span class="line">    <span class="meta">@Override</span></span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">characters</span><span class="params">(<span class="keyword">char</span>[] ch, <span class="keyword">int</span> start, <span class="keyword">int</span> length)</span> <span class="keyword">throws</span> SAXException </span>&#123;</span><br><span class="line">        <span class="keyword">super</span>.characters(ch, start, length);</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>.title) &#123;</span><br><span class="line">            String bookTitle = <span class="keyword">new</span> String(ch, start, length);</span><br><span class="line">            System.out.println(<span class="string">"Book title : "</span> +bookTitle);</span><br><span class="line">            <span class="keyword">this</span>.nameList.add(bookTitle);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">&lt;bookstore&gt;</span><br><span class="line">    &lt;books&gt;</span><br><span class="line">        &lt;book category=<span class="string">"COOKING"</span>&gt;</span><br><span class="line">            &lt;title lang="en"&gt;Everyday Italian&lt;/title&gt;</span><br><span class="line">            &lt;author&gt;Giada De Laurentiis&lt;/author&gt;</span><br><span class="line">            &lt;year&gt;2005&lt;/year&gt;</span><br><span class="line">            &lt;price&gt;30.00&lt;/price&gt;</span><br><span class="line">        &lt;/book&gt;</span><br><span class="line">        &lt;book category=<span class="string">"CHILDREN"</span>&gt;</span><br><span class="line">            &lt;title lang="en"&gt;Harry Potter&lt;/title&gt;</span><br><span class="line">            &lt;author&gt;J K. Rowling&lt;/author&gt;</span><br><span class="line">            &lt;year&gt;2005&lt;/year&gt;</span><br><span class="line">            &lt;price&gt;29.99&lt;/price&gt;</span><br><span class="line">        &lt;/book&gt;</span><br><span class="line">        &lt;book category=<span class="string">"WEB"</span>&gt;</span><br><span class="line">            &lt;title lang="en"&gt;Learning XML&lt;/title&gt;</span><br><span class="line">            &lt;author&gt;Erik T. Ray&lt;/author&gt;</span><br><span class="line">            &lt;year&gt;2003&lt;/year&gt;</span><br><span class="line">            &lt;price&gt;39.95&lt;/price&gt;</span><br><span class="line">        &lt;/book&gt;</span><br><span class="line">    &lt;/books&gt;</span><br><span class="line">&lt;/bookstore&gt;</span><br></pre></td></tr></table></figure>
+
+<h3 id="Stax"><a href="#Stax" class="headerlink" title="Stax"></a>Stax</h3><ul>
+<li>Streaming API for XML<ul>
+<li>流模型中的拉模型</li>
+<li>在遍历文档时,会把感兴趣的部分从读取器中拉出,不需要引发事件,允许我们选择性地处理节点.这大大提高了灵活性,以及整体效率</li>
+<li>两套API<ul>
+<li>基于指针的API,XMLStreamReader</li>
+<li>基于迭代器的API,XMLEventReader</li>
+</ul>
+</li>
+</ul>
+</li>
+<li>查看相关例子</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">package</span> xml.stax;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> javax.swing.text.html.HTMLDocument;</span><br><span class="line"><span class="keyword">import</span> javax.xml.stream.*;</span><br><span class="line"><span class="keyword">import</span> javax.xml.stream.events.Attribute;</span><br><span class="line"><span class="keyword">import</span> javax.xml.stream.events.EndElement;</span><br><span class="line"><span class="keyword">import</span> javax.xml.stream.events.StartElement;</span><br><span class="line"><span class="keyword">import</span> javax.xml.stream.events.XMLEvent;</span><br><span class="line"><span class="keyword">import</span> java.io.FileNotFoundException;</span><br><span class="line"><span class="keyword">import</span> java.io.FileReader;</span><br><span class="line"><span class="keyword">import</span> java.util.Iterator;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">StaxReader</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> </span>&#123;</span><br><span class="line">        StaxReader.readByStream();</span><br><span class="line">        System.out.println(<span class="string">"==================="</span>);</span><br><span class="line">        StaxReader.readByEvent();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">readByEvent</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        String xmlFile = <span class="string">"books.xml"</span>;</span><br><span class="line">        XMLInputFactory factory = XMLInputFactory.newFactory();</span><br><span class="line">        <span class="keyword">boolean</span> isTitle = <span class="keyword">false</span>;</span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="comment">//创建基于迭代器的时间读取器对象</span></span><br><span class="line">            XMLEventReader eventReader = factory.createXMLEventReader(<span class="keyword">new</span> FileReader(xmlFile));</span><br><span class="line">            <span class="comment">//遍历Event迭代器</span></span><br><span class="line">            <span class="keyword">while</span> (eventReader.hasNext()) &#123;</span><br><span class="line">                XMLEvent event = eventReader.nextEvent();</span><br><span class="line">                <span class="comment">//如果事件对象是元素的开始</span></span><br><span class="line">                <span class="keyword">if</span> (event.isStartElement()) &#123;</span><br><span class="line">                    <span class="comment">//转换成开始元素时间对象</span></span><br><span class="line">                    StartElement startElement = event.asStartElement();</span><br><span class="line">                    <span class="comment">//打印元素标签的本地名称</span></span><br><span class="line">                    String name = startElement.getName().getLocalPart();</span><br><span class="line">                    <span class="keyword">if</span> (<span class="string">"title"</span>.equals(name)) &#123;</span><br><span class="line">                        isTitle = <span class="keyword">true</span>;</span><br><span class="line">                        System.out.println(<span class="string">"title : "</span>);</span><br><span class="line">                    &#125;</span><br><span class="line">                    <span class="comment">//取得所有属性</span></span><br><span class="line">                    Iterator attrs = startElement.getAttributes();</span><br><span class="line">                    <span class="keyword">while</span> (attrs.hasNext()) &#123;</span><br><span class="line">                        <span class="comment">//打印所有属性</span></span><br><span class="line">                        Attribute attribute = (Attribute) attrs.next();</span><br><span class="line"></span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">//如果是正文</span></span><br><span class="line">                <span class="keyword">if</span> (event.isCharacters()) &#123;</span><br><span class="line">                    String s = event.asCharacters().getData();</span><br><span class="line">                    <span class="keyword">if</span> (<span class="keyword">null</span> != s &amp;&amp; s.trim().length() &gt; <span class="number">0</span> &amp;&amp; isTitle) &#123;</span><br><span class="line">                        System.out.println(s.trim());</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                <span class="comment">//如果事件对象是元素的结束</span></span><br><span class="line">                <span class="keyword">if</span> (event.isEndElement()) &#123;</span><br><span class="line">                    EndElement endElement = event.asEndElement();</span><br><span class="line">                    String name = endElement.getName().getLocalPart();</span><br><span class="line">                    <span class="keyword">if</span> (<span class="string">"title"</span>.equals(name)) &#123;</span><br><span class="line">                        isTitle = <span class="keyword">false</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">            eventReader.close();</span><br><span class="line">        &#125; <span class="keyword">catch</span> (FileNotFoundException ignored) &#123;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (XMLStreamException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">readByStream</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        String xmlFile = <span class="string">"books.xml"</span>;</span><br><span class="line">        XMLInputFactory factory = XMLInputFactory.newFactory();</span><br><span class="line">        XMLStreamReader streamReader = <span class="keyword">null</span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            streamReader = factory.createXMLStreamReader(<span class="keyword">new</span> FileReader(xmlFile));</span><br><span class="line">        &#125; <span class="keyword">catch</span> (FileNotFoundException | XMLStreamException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="comment">//基于指针遍历</span></span><br><span class="line">        <span class="keyword">try</span> &#123;</span><br><span class="line">            <span class="keyword">assert</span> streamReader != <span class="keyword">null</span>;</span><br><span class="line">            <span class="keyword">while</span> (streamReader.hasNext()) &#123;</span><br><span class="line">                <span class="keyword">int</span> event = streamReader.next();</span><br><span class="line">                <span class="comment">//如果是元素的开始</span></span><br><span class="line">                <span class="keyword">if</span> (event == XMLStreamConstants.START_ELEMENT) &#123;</span><br><span class="line">                    <span class="comment">//列出所有书籍名称</span></span><br><span class="line">                    <span class="keyword">if</span> (<span class="string">"title"</span>.equalsIgnoreCase(streamReader.getLocalName())) &#123;</span><br><span class="line">                        System.out.println(<span class="string">"title : "</span> + streamReader.getElementText());</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">                streamReader.close();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125; <span class="keyword">catch</span> (XMLStreamException e) &#123;</span><br><span class="line">            e.printStackTrace();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="其他的第三方库"><a href="#其他的第三方库" class="headerlink" title="其他的第三方库"></a>其他的第三方库</h3><ul>
+<li>DOM/SAX/Stax是jdk自带的解析功能</li>
+<li>第三方库<ul>
+<li>JDOM:<a href="http://www.jdom.org" target="_blank" rel="noopener">www.jdom.org</a></li>
+<li>DOM4J:dom4j.github.io</li>
+</ul>
+</li>
+<li>第三方库一般都包含DOM,SAX等多种方式解析, 是对Java解析进行封装 </li>
+</ul>
+<h3 id="XML总结"><a href="#XML总结" class="headerlink" title="XML总结"></a>XML总结</h3><ul>
+<li>DOM:读(小规模)XML,写XML</li>
+<li>SAX/Stax:适合(大规模)XML</li>
+</ul>
+<h2 id="JSON简介及解析"><a href="#JSON简介及解析" class="headerlink" title="JSON简介及解析"></a>JSON简介及解析</h2><h3 id="JSON"><a href="#JSON" class="headerlink" title="JSON"></a>JSON</h3><ul>
+<li>Javasc Object Notation,JS对象表示法</li>
+<li>是一种轻量级的数据交换格式</li>
+<li>类似XML,更小,更快,更易解析</li>
+<li>最早用于JavaScript,容易解析,最后推广到全语言</li>
+<li>尽管使用JavaScript语法,但是独立于编程语言</li>
+</ul>
+<h3 id="JSONObject和JSONArray"><a href="#JSONObject和JSONArray" class="headerlink" title="JSONObject和JSONArray"></a>JSONObject和JSONArray</h3><ul>
+<li>名称/值对. 如”firstName” : “John”<ul>
+<li>JSON对象 :{“name” : “Jo”, “email” : “<a href="mailto:a@b.com">a@b.com</a>“}</li>
+<li>数据在键值对中</li>
+<li>数据由逗号分隔</li>
+<li>花括号保存对象</li>
+</ul>
+</li>
+<li>JSON数组<ul>
+<li>方括号保存数组</li>
+<li><code>[{&quot;name&quot; :&quot;Jo&quot;,&quot;email&quot; : &quot;a@b.com&quot;}, {&quot;name&quot; : &quot;Jo&quot;,&quot;email&quot; : &quot;a@b.com&quot;}]</code> </li>
+</ul>
+</li>
+</ul>
+<h3 id="Java的JSON处理"><a href="#Java的JSON处理" class="headerlink" title="Java的JSON处理"></a>Java的JSON处理</h3><ul>
+<li>org.json : JSON官方推荐的解析类<ul>
+<li>简单易用,通用性强</li>
+<li>复杂功能欠缺</li>
+</ul>
+</li>
+<li>GSON: Google出品<ul>
+<li>基于反射,可以实现JSON对象,JSON字符串和Java对象互转</li>
+</ul>
+</li>
+<li>Jackson : 号称最快的JSON处理器<ul>
+<li>简单易用,社区更新和发布速度比较快</li>
+</ul>
+</li>
+</ul>
+<h3 id="JSON主要用途"><a href="#JSON主要用途" class="headerlink" title="JSON主要用途"></a>JSON主要用途</h3><ul>
+<li>JSON生成</li>
+<li>JSON解析</li>
+<li>JSON校验</li>
+<li>和Java Bean对象进行互解析<ul>
+<li>具有一个无参的构造函数</li>
+<li>可以包括多个属性,所有属性都是private</li>
+<li>每个属性都有对应的Getter/Setter方法</li>
+<li>Java Bean用于封装数据,又可称为POJO( Plain Old JAva Object)</li>
+</ul>
+</li>
+</ul>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> org.json.JSONArray;</span><br><span class="line"><span class="keyword">import</span> org.json.JSONObject;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.io.FileNotFoundException;</span><br><span class="line"><span class="keyword">import</span> java.io.FileReader;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.util.ArrayList;</span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="comment">/**</span></span><br><span class="line"><span class="comment"> * 采用org.json包进行解析JSON</span></span><br><span class="line"><span class="comment"> * <span class="doctag">@author</span> china</span></span><br><span class="line"><span class="comment"> */</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">OrgJsonTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        testJsonObject();</span><br><span class="line">        System.out.println(<span class="string">"==============="</span>);</span><br><span class="line">        testJsonFile();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">testJsonFile</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">"books.json"</span>);</span><br><span class="line">        <span class="keyword">try</span> (FileReader reader = <span class="keyword">new</span> FileReader(file))&#123;</span><br><span class="line">            <span class="comment">//读取文件内容到JSONObject对象中</span></span><br><span class="line">            <span class="keyword">int</span> fileLength = (<span class="keyword">int</span>)file.length();</span><br><span class="line">            <span class="keyword">char</span>[] chars = <span class="keyword">new</span> <span class="keyword">char</span>[fileLength];</span><br><span class="line">            reader.read(chars);</span><br><span class="line">            String s = String.valueOf(chars);</span><br><span class="line">            JSONObject jsonObject = <span class="keyword">new</span> JSONObject(s);</span><br><span class="line"></span><br><span class="line">            <span class="comment">//开始解析JSONObject对象</span></span><br><span class="line">            JSONArray books = jsonObject.getJSONArray(<span class="string">"books"</span>);</span><br><span class="line">            List&lt;Book&gt; bookList = <span class="keyword">new</span> ArrayList&lt;&gt;();</span><br><span class="line">            <span class="keyword">for</span> (Object book : books) &#123;</span><br><span class="line">                <span class="comment">//获取单个JSONObj对象</span></span><br><span class="line">                JSONObject object = (JSONObject) book;</span><br><span class="line">                Book book1 = <span class="keyword">new</span> Book();</span><br><span class="line">                book1.setAuthor(object.getString(<span class="string">"author"</span>));</span><br><span class="line">                book1.setCategory(object.getString(<span class="string">"category"</span>));</span><br><span class="line">                book1.setPrice(object.getInt(<span class="string">"price"</span>));</span><br><span class="line">                book1.setTitle(object.getString(<span class="string">"title"</span>));</span><br><span class="line">                book1.setYear(object.getString(<span class="string">"year"</span>));</span><br><span class="line"></span><br><span class="line">                bookList.add(book1);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">for</span> (Book book : bookList) &#123;</span><br><span class="line">                System.out.println(book.toString());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">testJsonObject</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Person person = <span class="keyword">new</span> Person();</span><br><span class="line">        person.setName(<span class="string">"Tom"</span>);</span><br><span class="line">        person.setAge(<span class="number">20</span>);</span><br><span class="line">        person.setScores(Arrays.asList(<span class="number">20</span>,<span class="number">30</span>,<span class="number">40</span>));</span><br><span class="line"></span><br><span class="line">        JSONObject jsonObject = <span class="keyword">new</span> JSONObject();</span><br><span class="line">        jsonObject.put(<span class="string">"name"</span>, person.getName());</span><br><span class="line">        jsonObject.put(<span class="string">"age"</span>, person.getAge());</span><br><span class="line">        jsonObject.put(<span class="string">"scores"</span>, person.getScores());</span><br><span class="line">        System.out.println(jsonObject);</span><br><span class="line"></span><br><span class="line">        System.out.println(<span class="string">"name : "</span> + jsonObject.get(<span class="string">"name"</span>));</span><br><span class="line">        System.out.println(<span class="string">"age : "</span> + jsonObject.get(<span class="string">"age"</span>));</span><br><span class="line">        System.out.println(<span class="string">"scores : "</span> + jsonObject.get(<span class="string">"scores"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.google.gson.Gson;</span><br><span class="line"><span class="keyword">import</span> com.google.gson.JsonObject;</span><br><span class="line"><span class="keyword">import</span> com.google.gson.reflect.TypeToken;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.io.FileNotFoundException;</span><br><span class="line"><span class="keyword">import</span> java.io.FileReader;</span><br><span class="line"><span class="keyword">import</span> java.io.IOException;</span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">GsonTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        testJsonObject();</span><br><span class="line">        System.out.println(<span class="string">"============="</span>);</span><br><span class="line">        testJsonFile();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">testJsonFile</span><span class="params">()</span> <span class="keyword">throws</span> IOException </span>&#123;</span><br><span class="line">        Gson gson = <span class="keyword">new</span> Gson();</span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">"books2.json"</span>);</span><br><span class="line"></span><br><span class="line">        <span class="keyword">try</span> (FileReader reader = <span class="keyword">new</span> FileReader(file)) &#123;</span><br><span class="line">            List&lt;Book&gt; books = gson.fromJson(reader, <span class="keyword">new</span> TypeToken&lt;List&lt;Book&gt;&gt;()&#123;&#125;.getType());</span><br><span class="line">            <span class="keyword">for</span> (Book book : books) &#123;</span><br><span class="line">                System.out.println(book.toString());</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">testJsonObject</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        Person person = <span class="keyword">new</span> Person();</span><br><span class="line">        person.setName(<span class="string">"Tom"</span>);</span><br><span class="line">        person.setAge(<span class="number">20</span>);</span><br><span class="line">        person.setScores(Arrays.asList(<span class="number">20</span>,<span class="number">30</span>,<span class="number">40</span>));</span><br><span class="line"></span><br><span class="line">        Gson gson = <span class="keyword">new</span> Gson();</span><br><span class="line">        String s = gson.toJson(person);</span><br><span class="line">        System.out.println(s);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//JSON to Java</span></span><br><span class="line">        Person person1 = gson.fromJson(s, Person<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">        System.out.println(person1.toString());</span><br><span class="line"></span><br><span class="line">        <span class="comment">//调用Gson的JSONObj</span></span><br><span class="line">        JsonObject jsonObject = gson.toJsonTree(person).getAsJsonObject();</span><br><span class="line">        System.out.println(<span class="string">"name : "</span> + jsonObject.get(<span class="string">"name"</span>));</span><br><span class="line">        System.out.println(<span class="string">"age : "</span> + jsonObject.get(<span class="string">"age"</span>));</span><br><span class="line">        System.out.println(<span class="string">"scores : "</span> + jsonObject.get(<span class="string">"scores"</span>));</span><br><span class="line"></span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.core.JsonProcessingException;</span><br><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.core.type.TypeReference;</span><br><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.databind.JsonNode;</span><br><span class="line"><span class="keyword">import</span> com.fasterxml.jackson.databind.ObjectMapper;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.io.File;</span><br><span class="line"><span class="keyword">import</span> java.util.Arrays;</span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">JacksonTest</span> </span>&#123;</span><br><span class="line">    <span class="function"><span class="keyword">public</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">main</span><span class="params">(String[] args)</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        testJsonObject();</span><br><span class="line">        System.out.println(<span class="string">"==============="</span>);</span><br><span class="line">        testJsonFile();</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">testJsonFile</span><span class="params">()</span> <span class="keyword">throws</span> Exception</span>&#123;</span><br><span class="line">        ObjectMapper objectMapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line">        File file = <span class="keyword">new</span> File(<span class="string">"books2.json"</span>);</span><br><span class="line">        List&lt;Book&gt; books = objectMapper.readValue(file, <span class="keyword">new</span> TypeReference&lt;List&lt;Book&gt;&gt;() &#123;&#125;);</span><br><span class="line">        <span class="keyword">for</span> (Book book : books) &#123;</span><br><span class="line">            System.out.println(book.toString());</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="function"><span class="keyword">private</span> <span class="keyword">static</span> <span class="keyword">void</span> <span class="title">testJsonObject</span><span class="params">()</span> <span class="keyword">throws</span> Exception </span>&#123;</span><br><span class="line">        ObjectMapper objectMapper = <span class="keyword">new</span> ObjectMapper();</span><br><span class="line"></span><br><span class="line">        Person person = <span class="keyword">new</span> Person();</span><br><span class="line">        person.setName(<span class="string">"Tom"</span>);</span><br><span class="line">        person.setAge(<span class="number">20</span>);</span><br><span class="line">        person.setScores(Arrays.asList(<span class="number">20</span>,<span class="number">30</span>,<span class="number">40</span>));</span><br><span class="line"></span><br><span class="line">        <span class="comment">//将对象解析成JSON字符串</span></span><br><span class="line">        String jsonStr = objectMapper.writeValueAsString(person);</span><br><span class="line">        System.out.println(jsonStr);</span><br><span class="line"></span><br><span class="line">        <span class="comment">//从json字符串重构对象</span></span><br><span class="line">        Person person1 = objectMapper.readValue(jsonStr, Person<span class="class">.<span class="keyword">class</span>)</span>;</span><br><span class="line">        System.out.println(person1.toString());</span><br><span class="line"></span><br><span class="line">        <span class="comment">//从json字符串重构为JSONNode对象</span></span><br><span class="line">        JsonNode node = objectMapper.readTree(jsonStr);</span><br><span class="line">        System.out.println(node.get(<span class="string">"name"</span>).asText());</span><br><span class="line">        System.out.println(node.get(<span class="string">"age"</span>).asText());</span><br><span class="line">        System.out.println(node.get(<span class="string">"scores"</span>));</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> java.util.List;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Person</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String name;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> age;</span><br><span class="line">    <span class="keyword">private</span> List&lt;Integer&gt; scores;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">import</span> lombok.Data;</span><br><span class="line"></span><br><span class="line"><span class="meta">@Data</span></span><br><span class="line"><span class="keyword">public</span> <span class="class"><span class="keyword">class</span> <span class="title">Book</span> </span>&#123;</span><br><span class="line">    <span class="keyword">private</span> String category;</span><br><span class="line">    <span class="keyword">private</span> String title;</span><br><span class="line">    <span class="keyword">private</span> String author;</span><br><span class="line">    <span class="keyword">private</span> String year;</span><br><span class="line">    <span class="keyword">private</span> <span class="keyword">int</span> price;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="JSON和XML比较"><a href="#JSON和XML比较" class="headerlink" title="JSON和XML比较"></a>JSON和XML比较</h3><ul>
+<li>都是数据交换格式,可读性强,可扩展性高</li>
+<li>大部分的情况下,JSON更具优势,编码简单，装换方便,而且JSON字符长度一般小于XML,传输效率更高</li>
+<li>XML更加注意标签和顺序</li>
+<li>JSON会丢失信息</li>
+</ul>
+<h3 id="JSON总结"><a href="#JSON总结" class="headerlink" title="JSON总结"></a>JSON总结</h3><ul>
+<li>JSON是一种独立于编程语言的,轻量的,数据交换格式</li>
+<li>有多种第三方库辅助我们进行JSON生成和解析</li>
+<li>注意：JSON会丢失顺序性</li>
+</ul>
+
+      
+      <!-- reward -->
+      
+      <div id="reward-btn">
+        打赏
+      </div>
+      
+    </div>
+    
+    
+      <!-- copyright -->
+      
+        <div class="declare">
+          <ul class="post-copyright">
+            <li>
+              <i class="ri-copyright-line"></i>
+              <strong>版权声明： </strong s>
+              本博客所有文章除特别声明外，均采用 <a href="https://www.apache.org/licenses/LICENSE-2.0.html" rel="external nofollow"
+                target="_blank">Apache License 2.0</a> 许可协议。转载请注明出处！
+            </li>
+          </ul>
+        </div>
+        
+    <footer class="article-footer">
+      
+          
+<div class="share-btn">
+      <span class="share-sns share-outer">
+        <i class="ri-share-forward-line"></i>
+        分享
+      </span>
+      <div class="share-wrap">
+        <i class="arrow"></i>
+        <div class="share-icons">
+          
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="ri-weibo-fill"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="ri-wechat-fill"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="ri-qq-fill"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="ri-douban-line"></i>
+          </a>
+          <!-- <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a> -->
+          
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="ri-facebook-circle-fill"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="ri-twitter-fill"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="ri-google-fill"></i>
+          </a>
+        </div>
+      </div>
+</div>
+
+<div class="wx-share-modal">
+    <a class="modal-close" href="javascript:;"><i class="ri-close-circle-line"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//api.qrserver.com/v1/create-qr-code/?size=150x150&data=http://yoursite.com/2020/05/01/Java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF-%E8%BF%9B%E9%98%B6-%E7%AC%AC%E5%9B%9B%E7%AB%A0-%E9%AB%98%E7%BA%A7%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div id="share-mask"></div>
+      
+      
+
+    </footer>
+
+  </div>
+
+  
+  
+  <nav class="article-nav">
+    
+      <a href="/2020/05/01/Java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF-%E8%BF%9B%E9%98%B6-%E7%AC%AC%E5%9B%9B%E7%AB%A0-%E9%AB%98%E7%BA%A7%E6%96%87%E4%BB%B6%E5%A4%84%E7%90%86-%E7%BB%AD/" class="article-nav-link">
+        <strong class="article-nav-caption">上一篇</strong>
+        <div class="article-nav-title">
+          
+            Java核心技术[进阶] 第四章 高级文件处理(续)
+          
+        </div>
+      </a>
+    
+    
+      <a href="/2020/05/01/Java%E6%A0%B8%E5%BF%83%E6%8A%80%E6%9C%AF-%E8%BF%9B%E9%98%B6-%E7%AC%AC%E4%B8%89%E7%AB%A0-%E9%AB%98%E7%BA%A7%E6%96%87%E6%9C%AC%E5%A4%84%E7%90%86/" class="article-nav-link">
+        <strong class="article-nav-caption">下一篇</strong>
+        <div class="article-nav-title">Java核心技术[进阶] 第三章 高级文本处理</div>
+      </a>
+    
+  </nav>
+
+
+  
+
+  
+  
+<!-- valine评论 -->
+<div id="vcomments-box">
+    <div id="vcomments">
+    </div>
+</div>
+<script src="//cdn1.lncld.net/static/js/3.0.4/av-min.js"></script>
+<script src='https://cdn.jsdelivr.net/npm/valine@1.3.10/dist/Valine.min.js'></script>
+<script>
+    new Valine({
+        el: '#vcomments',
+        app_id: '',
+        app_key: '',
+        path: window.location.pathname,
+        notify: 'false',
+        verify: 'false',
+        avatar: 'mp',
+        placeholder: '给我的文章加点评论吧~',
+        recordIP: true
+    });
+    const infoEle = document.querySelector('#vcomments .info');
+    if (infoEle && infoEle.childNodes && infoEle.childNodes.length > 0) {
+        infoEle.childNodes.forEach(function (item) {
+            item.parentNode.removeChild(item);
+        });
+    }
+</script>
+<style>
+    #vcomments-box {
+        padding: 5px 30px;
+    }
+
+    @media screen and (max-width: 800px) {
+        #vcomments-box {
+            padding: 5px 0px;
+        }
+    }
+
+    #vcomments-box #vcomments {
+        background-color: #fff;
+    }
+
+    .v .vlist .vcard .vh {
+        padding-right: 20px;
+    }
+
+    .v .vlist .vcard {
+        padding-left: 10px;
+    }
+</style>
+
+  
+
+  
+  
+  
+
+</article>
+</section>
+      <footer class="footer">
+  <div class="outer">
+    <ul class="list-inline">
+      <li>
+        &copy;
+        2020
+        John Hu
+      </li>
+      <li>
+        
+        Powered by
+        
+        
+        <a href="https://hexo.io" target="_blank">Hexo</a> Theme <a href="https://github.com/Shen-Yu/hexo-theme-ayer" target="_blank">Ayer</a>
+        
+      </li>
+    </ul>
+    <ul class="list-inline">
+      <li>
+        
+        
+        <span>
+  <i>PV:<span id="busuanzi_value_page_pv"></span></i>
+  <i>UV:<span id="busuanzi_value_site_uv"></span></i>
+</span>
+        
+      </li>
+      
+      <li>
+        <!-- cnzz统计 -->
+        
+      </li>
+    </ul>
+  </div>
+</footer>
+      <div class="float_btns">
+        <div class="totop" id="totop">
+  <i class="ri-arrow-up-line"></i>
+</div>
+
+<div class="todark" id="todark">
+  <i class="ri-moon-line"></i>
+</div>
+
+      </div>
+    </main>
+    <aside class="sidebar on">
+      <button class="navbar-toggle"></button>
+<nav class="navbar">
+  
+  <div class="logo">
+    <a href="/"><img src="/images/ayer-side.svg" alt="光"></a>
+  </div>
+  
+  <ul class="nav nav-main">
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/">主页</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="/archives">归档</a>
+    </li>
+    
+    <li class="nav-item">
+      <a class="nav-item-link" href="https://github.com/jhonrk" target="_blank" rel="noopener">关于我</a>
+    </li>
+    
+  </ul>
+</nav>
+<nav class="navbar navbar-bottom">
+  <ul class="nav">
+    <li class="nav-item">
+      
+      <a class="nav-item-link nav-item-search"  title="Search">
+        <i class="ri-search-line"></i>
+      </a>
+      
+      
+    </li>
+  </ul>
+</nav>
+<div class="search-form-wrap">
+  <div class="local-search local-search-plugin">
+  <input type="search" id="local-search-input" class="local-search-input" placeholder="Search...">
+  <div id="local-search-result" class="local-search-result"></div>
+</div>
+</div>
+    </aside>
+    <script>
+      if (window.matchMedia("(max-width: 768px)").matches) {
+        document.querySelector('.content').classList.remove('on');
+        document.querySelector('.sidebar').classList.remove('on');
+      }
+    </script>
+    <div id="mask"></div>
+
+<!-- #reward -->
+<div id="reward">
+  <span class="close"><i class="ri-close-line"></i></span>
+  <p class="reward-p"><i class="ri-cup-line"></i>请我喝杯咖啡吧~</p>
+  <div class="reward-box">
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/alipay.jpg">
+      <span class="reward-type">支付宝</span>
+    </div>
+    
+    
+    <div class="reward-item">
+      <img class="reward-img" src="/images/wechat.jpg">
+      <span class="reward-type">微信</span>
+    </div>
+    
+  </div>
+</div>
+    
+<script src="/js/jquery-2.0.3.min.js"></script>
+
+
+<script src="/js/lazyload.min.js"></script>
+
+
+<script>
+  try {
+    var typed = new Typed("#subtitle", {
+      strings: ['要温暖洒脱再面朝大海', '要心存信念见春暖花开', '愿世间的光都照耀在你身上'],
+      startDelay: 0,
+      typeSpeed: 200,
+      loop: true,
+      backSpeed: 100,
+      showCursor: true
+    });
+  } catch (err) {
+  }
+
+</script>
+
+
+
+
+<script src="/js/tocbot.min.js"></script>
+
+<script>
+  // Tocbot_v4.7.0  http://tscanlin.github.io/tocbot/
+  tocbot.init({
+    tocSelector: '.tocbot',
+    contentSelector: '.article-entry',
+    headingSelector: 'h1, h2, h3, h4, h5, h6',
+    hasInnerContainers: true,
+    scrollSmooth: true,
+    scrollContainer: 'main',
+    positionFixedSelector: '.tocbot',
+    positionFixedClass: 'is-position-fixed',
+    fixedSidebarOffset: 'auto'
+  });
+</script>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/jquery-modal@0.9.2/jquery.modal.min.css">
+<script src="https://cdn.jsdelivr.net/npm/justifiedGallery@3.7.0/dist/js/jquery.justifiedGallery.min.js"></script>
+
+<script src="/dist/main.js"></script>
+
+
+
+<!-- Root element of PhotoSwipe. Must have class pswp. -->
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    <!-- Background of PhotoSwipe. 
+         It's a separate element as animating opacity is faster than rgba(). -->
+    <div class="pswp__bg"></div>
+
+    <!-- Slides wrapper with overflow:hidden. -->
+    <div class="pswp__scroll-wrap">
+
+        <!-- Container that holds slides. 
+            PhotoSwipe keeps only 3 of them in the DOM to save memory.
+            Don't modify these 3 pswp__item elements, data is added later on. -->
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        <!-- Default (PhotoSwipeUI_Default) interface on top of sliding area. Can be changed. -->
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                <!--  Controls are self-explanatory. Order can be changed. -->
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" style="display:none" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                <!-- Preloader demo http://codepen.io/dimsemenov/pen/yyBWoR -->
+                <!-- element will get class pswp__preloader--active when preloader is running -->
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.min.css">
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"></script>
+
+<script>
+    function viewer_init() {
+        let pswpElement = document.querySelectorAll('.pswp')[0];
+        let $imgArr = document.querySelectorAll(('.article-entry img:not(.reward-img)'))
+
+        $imgArr.forEach(($em, i) => {
+            $em.onclick = () => {
+                // slider展开状态
+                // todo: 这样不好，后面改成状态
+                if (document.querySelector('.left-col.show')) return
+                let items = []
+                $imgArr.forEach(($em2, i2) => {
+                    let img = $em2.getAttribute('data-idx', i2)
+                    let src = $em2.getAttribute('data-target') || $em2.getAttribute('src')
+                    let title = $em2.getAttribute('alt')
+                    // 获得原图尺寸
+                    const image = new Image()
+                    image.src = src
+                    items.push({
+                        src: src,
+                        w: image.width || $em2.width,
+                        h: image.height || $em2.height,
+                        title: title
+                    })
+                })
+                var gallery = new PhotoSwipe(pswpElement, PhotoSwipeUI_Default, items, {
+                    index: parseInt(i)
+                });
+                gallery.init()
+            }
+        })
+    }
+    viewer_init()
+</script>
+
+
+
+
+
+<script src="/js/busuanzi-2.3.pure.min.js"></script>
+
+
+
+<script type="text/javascript" src="https://js.users.51.la/20544303.js"></script>
+
+  
+<script src="/js/clickLove.js"></script>
+
+
+
+    
+    <div id="music">
+    
+    
+    
+    <iframe frameborder="no" border="1" marginwidth="0" marginheight="0" width="200" height="52"
+        src="//music.163.com/outchain/player?type=2&id=22728974&auto=1&height=32"></iframe>
+</div>
+
+<style>
+    #music {
+        position: fixed;
+        right: 15px;
+        bottom: 0;
+        z-index: 998;
+    }
+</style>
+    
+  </div>
+</body>
+
+</html>
