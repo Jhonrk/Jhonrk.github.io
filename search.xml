@@ -118,6 +118,9 @@
 <li>多使用第三方库</li>
 </ul>
 ]]></content>
+      <tags>
+        <tag>Java</tag>
+      </tags>
   </entry>
   <entry>
     <title>Java核心技术[进阶] 第四章 高级文件处理(续)</title>
@@ -212,6 +215,9 @@
 <li>API很多，需要多查询，多练习。</li>
 </ul>
 <h2 id="条形码和二维码简介及解析"><a href="#条形码和二维码简介及解析" class="headerlink" title="条形码和二维码简介及解析"></a>条形码和二维码简介及解析</h2>]]></content>
+      <tags>
+        <tag>Java</tag>
+      </tags>
   </entry>
   <entry>
     <title>Java核心技术[进阶] 第四章 高级文件处理</title>
@@ -425,5 +431,8 @@
 <li>注意：JSON会丢失顺序性</li>
 </ul>
 ]]></content>
+      <tags>
+        <tag>Java</tag>
+      </tags>
   </entry>
 </search>
